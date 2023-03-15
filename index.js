@@ -61,8 +61,47 @@ platformCollisions2D.forEach((row, y) => {
 })
 
 const player = new Player({
-    position: { x: 100, y: 0 },
-    collisionBlocks
+    position: { x: 100, y: 300 },
+    collisionBlocks,
+    src: './assets/img/warrior/Idle.png',
+    frameRate: 8,
+    animations: {
+        Idle: {
+            src: './assets/img/warrior/Idle.png',
+            frameRate: 8,
+            frameBuffer: 8
+        },
+        Run: {
+            src: './assets/img/warrior/Run.png',
+            frameRate: 8,
+            frameBuffer: 5
+        },
+        RunLeft: {
+            src: './assets/img/warrior/RunLeft.png',
+            frameRate: 8,
+            frameBuffer: 5
+        },
+        JumpLeft: {
+            src: './assets/img/warrior/JumpLeft.png',
+            frameRate: 2,
+            frameBuffer: 3
+        },
+        Jump: {
+            src: './assets/img/warrior/Jump.png',
+            frameRate: 2,
+            frameBuffer: 3
+        },
+        Fall: {
+            src: './assets/img/warrior/Fall.png',
+            frameRate: 2,
+            frameBuffer: 3
+        },
+        FallLeft: {
+            src: './assets/img/warrior/FallLeft.png',
+            frameRate: 2,
+            frameBuffer: 3
+        }
+    }
 })
 
 const background = new Sprite({
@@ -70,7 +109,7 @@ const background = new Sprite({
         x: 0,
         y: 0
     },
-    url: './assets/img/background.png'
+    src: './assets/img/background.png'
 })
 
 function animate() {
@@ -94,8 +133,21 @@ function animate() {
     player.update()
 
     player.velocity.x = 0
-    if (keys.d.isPressed) player.velocity.x = 2
-    else if (keys.a.isPressed) player.velocity.x = -2
+    if (keys.d.isPressed) {
+        player.switchSprite('Run')
+        player.velocity.x = 2
+    } else if (keys.a.isPressed) {
+        player.switchSprite('RunLeft')
+        player.velocity.x = -2
+    } else if (player.velocity.y === 0) {
+        player.switchSprite('Idle')
+    }
+
+    // jumping
+    if (player.velocity.y < 0) player.switchSprite('Jump')
+    // else if (player.velocity.y < 0 && player.velocity.x < 0) player.switchSprite('JumpLeft')
+    else if (player.velocity.y > 0) player.switchSprite('Fall')
+    // else if (player.velocity.x > 0) player.switchSprite('FallLeft')
 
     c.restore()
 }
@@ -112,7 +164,7 @@ window.addEventListener('keydown', (event) => {
             break
         case 'w':
             keys.w.isPressed = true
-            player.velocity.y = -4
+            player.velocity.y = -10
             break
 
     }
