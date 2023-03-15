@@ -114,6 +114,15 @@ const background = new Sprite({
     src: './assets/img/background.png'
 })
 
+const backgroundImageHeight = 432
+
+const camera = {
+    position: {
+        x: 0,
+        y: -backgroundImageHeight + scaledCanvas.height
+    }
+}
+
 function animate() {
     window.requestAnimationFrame(animate)
     c.fillStyle = 'white'
@@ -122,33 +131,35 @@ function animate() {
     // this is only called once
     c.save()
     c.scale(4, 4)
-    c.translate(0, -background.image.height + scaledCanvas.height)
+    c.translate(camera.position.x, camera.position.y)
     background.update()
 
-    collisionBlocks.forEach((block) => {
-        block.update()
-    })
-    platformCollisionBlocks.forEach((block) => {
-        block.update()
-    })
-
+    player.checkForHorizontalCanvasCollision()
     player.update()
 
     player.velocity.x = 0
     if (keys.d.isPressed) {
         player.switchSprite('Run')
         player.velocity.x = 2
+        player.shouldPanCameraToTheLeft({ canvas, camera })
     } else if (keys.a.isPressed) {
         player.switchSprite('RunLeft')
         player.velocity.x = -2
+        player.shouldPanCameraToTheRight({ canvas, camera })
     } else if (player.velocity.y === 0) {
         player.switchSprite('Idle')
     }
 
     // jumping
-    if (player.velocity.y < 0) player.switchSprite('Jump')
+    if (player.velocity.y < 0) {
+        player.shouldPanCameraDown({ canvas, camera })
+        player.switchSprite('Jump')
+    }
     // else if (player.velocity.y < 0 && player.velocity.x < 0) player.switchSprite('JumpLeft')
-    else if (player.velocity.y > 0) player.switchSprite('Fall')
+    else if (player.velocity.y > 0) {
+        player.switchSprite('Fall')
+        player.shouldPanCameraUp({ canvas, camera })
+    }
     // else if (player.velocity.x > 0) player.switchSprite('FallLeft')
 
     c.restore()
