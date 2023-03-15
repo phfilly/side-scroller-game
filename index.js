@@ -4,7 +4,7 @@ const c = canvas.getContext('2d')
 canvas.width = 1024
 canvas.height = 576
 
-const gravity = 0.5
+const gravity = 0.1
 const scaledCanvas = {
     width: canvas.width / 4,
     height: canvas.height / 4
@@ -54,7 +54,8 @@ platformCollisions2D.forEach((row, y) => {
                 position: {
                     x: x * 16,
                     y: y * 16
-                }
+                },
+                height: 4
             }))
         }
     })
@@ -63,6 +64,7 @@ platformCollisions2D.forEach((row, y) => {
 const player = new Player({
     position: { x: 100, y: 300 },
     collisionBlocks,
+    platformCollisionBlocks,
     src: './assets/img/warrior/Idle.png',
     frameRate: 8,
     animations: {
@@ -164,7 +166,8 @@ window.addEventListener('keydown', (event) => {
             break
         case 'w':
             keys.w.isPressed = true
-            player.velocity.y = -10
+            // jump value
+            player.velocity.y = -4
             break
 
     }
