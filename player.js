@@ -1,5 +1,5 @@
 class Player extends Sprite {
-    constructor({ position, collisionBlocks, src, frameRate, scale = 0.5, animations }) {
+    constructor({ position, collisionBlocks, platformCollisionBlocks, src, frameRate, scale = 0.5, animations }) {
         super({ src, frameRate, scale })
         this.position = position
         this.velocity = {
@@ -7,6 +7,7 @@ class Player extends Sprite {
             y: 1,
         }
         this.collisionBlocks = collisionBlocks
+        this.platformCollisionBlocks = platformCollisionBlocks
         this.animations = animations
         this.updateHitbox()
 
@@ -112,6 +113,26 @@ class Player extends Sprite {
                     const offset = this.hitbox.position.y - this.position.y
 
                     this.position.y = collisionBlock.position.y + collisionBlock.height - offset + 0.01
+                    break
+                }
+            }
+        }
+
+        // platform collision blocks
+        for (let i = 0; i < this.platformCollisionBlocks.length; i++) {
+            const platformCollisionBlock = this.platformCollisionBlocks[i]
+
+            if (isPlatformCollision({
+                object1: this.hitbox,
+                object2: platformCollisionBlock
+            })) {
+                // player is currently falling down
+                if (this.velocity.y > 0) {
+                    this.velocity.y = 0
+
+                    const offset = this.hitbox.position.y - this.position.y + this.hitbox.height
+
+                    this.position.y = platformCollisionBlock.position.y - offset - 0.01
                     break
                 }
             }
