@@ -19,6 +19,9 @@ const keys = {
     },
     w: {
         isPressed: false
+    },
+    attack1: {
+        isPressed: false
     }
 }
 
@@ -102,6 +105,11 @@ const player = new Player({
             src: './assets/img/warrior/FallLeft.png',
             frameRate: 2,
             frameBuffer: 3
+        },
+        Attack1: {
+            src: './assets/img/warrior/Attack1.png',
+            frameRate: 4,
+            frameBuffer: 4
         }
     }
 })
@@ -146,6 +154,8 @@ function animate() {
         player.switchSprite('RunLeft')
         player.velocity.x = -2
         player.shouldPanCameraToTheRight({ canvas, camera })
+    } else if (keys.attack1.isPressed) {
+        player.switchSprite('Attack1')
     } else if (player.velocity.y === 0) {
         player.switchSprite('Idle')
     }
@@ -168,29 +178,62 @@ function animate() {
 animate()
 
 window.addEventListener('keydown', (event) => {
-    switch (event.key) {
+    detectMovementKey(event.key)
+})
+
+window.addEventListener('keyup', (event) => {
+    resetMovement(event.key)
+})
+
+function resetMovement(key) {
+    switch (key) {
+        case 'left':
+        case 'a':
+            keys.a.isPressed = false
+            break
+        case 'right':
+        case 'd':
+            keys.d.isPressed = false
+            break
+        case ' ':
+            keys.attack1.isPressed = false
+            break
+    }
+}
+
+function detectMovementKey(key) {
+    switch (key) {
+        case 'left':
         case 'a':
             keys.a.isPressed = true
             break
+        case 'right':
         case 'd':
             keys.d.isPressed = true
             break
+        case 'up':
         case 'w':
             keys.w.isPressed = true
             // jump value
             player.velocity.y = -4
             break
-
-    }
-})
-
-window.addEventListener('keyup', (event) => {
-    switch (event.key) {
-        case 'a':
-            keys.a.isPressed = false
-            break
-        case 'd':
-            keys.d.isPressed = false
+        case ' ':
+            keys.attack1.isPressed = true
             break
     }
-})
+}
+
+function toggleMovement($event) {
+    detectMovementKey($event.target.className)
+}
+
+function toggleMovementComplete($event) {
+    resetMovement($event.target.className)
+}
+
+// const gamepadButtons = document.querySelectorAll('.gamepad-btn')
+// gamepadButtons.forEach((button) => {
+//     button.addEventListener("click", toggleMovement)
+//     // button.addEventListener("mouseup", toggleMovementComplete)
+// })
+
